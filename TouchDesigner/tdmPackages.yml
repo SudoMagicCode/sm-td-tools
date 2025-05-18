@@ -1,0 +1,8 @@
+name: ""
+tdVersion: ""
+tdPackages:
+    - package: github.com/SudoMagicCode/td-comp-icon
+      releaseTag: v1.0.6
+    - package: github.com/SudoMagicCode/TD-TOX-Saver
+      releaseTag: v1.0.9
+pythonRequirements: []

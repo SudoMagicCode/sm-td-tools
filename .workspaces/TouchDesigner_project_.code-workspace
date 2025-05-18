@@ -1,0 +1,14 @@
+{
+    "folders": [
+        {
+            "name": "Template Dev",
+            "path": "../",
+            "cwd": "${workspaceFolder}/project",
+            "python.interpreterPath": "C:/Program Files/Derivative/TouchDesigner.2023.11600/bin/python.exe"
+        },
+    ],
+    "settings": {
+        "files.exclude": {},
+        "workbench.colorTheme": "Overflow Contrast (rainglow)",
+    },
+}
