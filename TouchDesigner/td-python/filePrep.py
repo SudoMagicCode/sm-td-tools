@@ -1,90 +1,124 @@
 import json
 
-base_uri: str = "https://sudo-tools-td-templates.sudo.codes/builds/"
 
+class ToxExporter:
+    def __init__(self, ownerOp: callable) -> None:
 
-def build_inventory():
-    print('-> Starting build process')
+        self.base_uri: str = "https://sudo-tools-td-templates.sudo.codes/builds/"
+        self.release_dir_root: str = "../release/"
 
-    inventory = {
-        "setup": {
-            "base_uri": base_uri
-        },
-    }
+        print("TOX Exporter Init")
 
-    name_to_type_map = {
-        'base_templates': 'template',
-        'base_sm_comps': 'tdComp'
-    }
+    def Build_inventory(self) -> None:
+        self._build_inventory()
 
-    collections = []
-    contents = []
+    def _build_inventory(self) -> None:
+        print('-> Starting build process')
 
-    op_sources = ['base_templates', 'base_sm_comps']
-    source_exclude_list = ['base_template', 'base_icon']
-    set_exclude_list = ['base_icon',]
-    all_ops = []
+        inventory: dict = {
+            "setup": {
+                "base_uri": self.base_uri
+            },
+        }
 
-    for each_source in op_sources:
-        block_ops = op(each_source).findChildren(type=baseCOMP, depth=1)
+        name_to_type_map: dict[str, str] = {
+            'base_templates': 'template',
+            'base_sm_comps': 'tdComp'
+        }
 
-        for each_block in block_ops:
-            if each_block.name in source_exclude_list:
-                pass
-            else:
-                print(f'--> {each_block.name}')
-                external_ops = each_block.findChildren(type=baseCOMP, depth=1)
-                assets = []
-                set_info = {
-                    'block': each_block.par.Blockname.eval(),
-                    'summary': op(each_block.par.Summarycontents.eval()).text,
-                    'type': name_to_type_map.get(each_source)
-                }
+        collections: list = []
+        contents: list = []
 
-                for each_external_op in external_ops:
-                    if each_external_op.name in set_exclude_list:
-                        pass
-                    else:
-                        # save op
-                        asset_path = save_external_tox(each_external_op)
+        op_sources: list[str] = ['base_tools']
+        source_exclude_list: list[str] = ['base_template', 'base_icon']
+        set_exclude_list: list[str] = ['base_icon',]
+        all_ops: list = []
 
-                        external_op_contents = each_external_op.findChildren()
+        for each_source in op_sources:
+            blocks: list = op(each_source).findChildren(type=baseCOMP, depth=1)
 
-                        opFamilies = [
-                            op_content.family for op_content in external_op_contents]
-                        opTypes = [
-                            op_content.OPType for op_content in external_op_contents]
+            # handle all blocks / folders of examples
+            for each_block in blocks:
+                single_examples: list = each_block.findChildren(
+                    type=baseCOMP, depth=1)
 
-                        # build dict of child info
-                        child_info = {
-                            'display_name': each_external_op.par.Compname.eval(),
-                            'type': name_to_type_map.get(each_source),
-                            'tox_version': each_external_op.par.Toxversion.eval(),
-                            'last_updated': each_external_op.par.Lastsaved.eval(),
-                            'td_version': f'{each_external_op.par.Tdversion.eval()}.{each_external_op.par.Tdbuild.eval()}',
-                            'asset_path': asset_path,
-                            'opFamilies': list(set(opFamilies)),
-                            'opTypes': list(set(opTypes)),
-                        }
-                        assets.append(child_info)
-                        print('----> building info dict')
+                # skip template and icon ops
+                if each_block.name in source_exclude_list:
+                    pass
+                else:
+                    print(f'--> {each_block.name}')
+                    path: str = each_block.par.Blockname.eval()
+                    info: dict = self._generate_op_info(
+                        each_block, path)
+                    contents.append(info)
 
-                set_info['assets'] = assets
-                contents.append(set_info)
+                    all_ops.append(each_block)
 
-    collections.append({'author': 'SudoMagic', 'contents': contents})
+                    # handle each example itself
+                    for each_example in single_examples:
+                        # skip template and icon ops
+                        if each_example.name in source_exclude_list:
+                            pass
+                        else:
+                            print(f'---> {each_example.name}')
+                            path: str = f"{each_block.par.Blockname.eval()}/{each_example.par.Compname.eval()}"
+                            info: dict = self._generate_op_info(
+                                each_example, path)
+                            contents.append(info)
 
-    inventory['collections'] = collections
+        print('-> completing build')
 
-    print('--> writing inventory to file')
-    with open('release/builds/latest/inventory.json', 'w+') as file:
-        file.write(json.dumps(inventory))
+        collections.append({'author': 'SudoMagic', 'contents': contents})
+        inventory['collections'] = collections
+        self.write_inventory_to_file(inventory)
 
-    print('-> completing build')
+    def _generate_op_info(self, target_op: callable, path: str) -> dict:
 
+        # generate all the info needed for dict
+        asset_path: str = None
+        summary: str = None
+        type_tag: str = 'block' if 'block' in target_op.tags else 'template'
+        display_name: str = target_op.par.Blockname.eval(
+        ) if 'block' in target_op.tags else target_op.par.Compname.eval()
+        tox_version: str = None if 'block' in target_op.tags else target_op.par.Toxversion.eval()
+        last_updated: str = None if 'block' in target_op.tags else target_op.par.Lastsaved.eval()
+        td_version: str = None if 'block' in target_op.tags else f'{target_op.par.Tdversion.eval()}.{target_op.par.Tdbuild.eval()}'
+        op_families: list = None
+        op_types: list = None
 
-def save_external_tox(target_op: callable) -> str:
-    asset_path = f'tox/{target_op.id}.{target_op.name}.tox'
-    save_path = f'release/builds/latest/{asset_path}'
-    target_op.save(save_path)
-    return asset_path
+        # write op to disk and generate path
+        if 'block' in target_op.tags:
+            summary = target_op.par.Summarycontents.eval().text
+        else:
+            children_ops = target_op.findChildren()
+            asset_path = self.save_external(target_op)
+            op_families = list(
+                set([each_op.family for each_op in children_ops]))
+            op_types = list(set([each_op.OPType for each_op in children_ops]))
+
+        info: dict = {
+            "path": path,
+            "summary": summary,
+            'type': type_tag,
+            'display_name': display_name,
+            'tox_version': tox_version,
+            'last_updated': last_updated,
+            'td_version': td_version,
+            'asset_path': asset_path,
+            'opFamilies': op_families,
+            'opTypes': op_types,
+        }
+
+        return info
+
+    def write_inventory_to_file(self, inventory: dict) -> None:
+
+        print('--> writing inventory to file')
+        with open(f'{self.release_dir_root}inventory.json', 'w+') as file:
+            file.write(json.dumps(inventory))
+
+    def save_external(self, target_op: callable) -> str:
+        asset_path = f'{target_op.id}.{target_op.name}.tox'
+        save_path = f'{self.release_dir_root}{asset_path}'
+        target_op.save(save_path)
+        return asset_path
