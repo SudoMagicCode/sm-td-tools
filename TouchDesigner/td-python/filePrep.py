@@ -68,14 +68,15 @@ class ToxExporter:
         remote_op: remoteTox = remoteTox()
         # generate all the info needed for dict
         remote_op.asset_path
+        remote_op.path = path
         remote_op.type_tag = cloudPaletteTypes.folder if 'block' in target_op.tags else cloudPaletteTypes.tdComp
         remote_op.display_name = target_op.par.Blockname.eval(
         ) if 'block' in target_op.tags else target_op.par.Compname.eval()
-        remote_op.tox_version: str = None if 'block' in target_op.tags else target_op.par.Toxversion.eval()
-        remote_op.last_updated: str = None if 'block' in target_op.tags else target_op.par.Lastsaved.eval()
-        remote_op.td_version: str = None if 'block' in target_op.tags else f'{target_op.par.Tdversion.eval()}.{target_op.par.Tdbuild.eval()}'
-        remote_op.op_families: list = None
-        remote_op.op_types: list = None
+        remote_op.tox_version = None if 'block' in target_op.tags else target_op.par.Toxversion.eval()
+        remote_op.last_updated = None if 'block' in target_op.tags else target_op.par.Lastsaved.eval()
+        remote_op.td_version = None if 'block' in target_op.tags else f'{target_op.par.Tdversion.eval()}.{target_op.par.Tdbuild.eval()}'
+        remote_op.op_families = None
+        remote_op.op_types = None
 
         # write op to disk and generate path
         if 'block' in target_op.tags:
