@@ -1,13 +1,11 @@
 import json
 
-from githubCollection import githubCollection
-from remoteTox import remoteTox
-from cloudPaletteType import cloudPaletteTypes
+import SudoMagic
 
 
 class ToxExporter:
-    def __init__(self, ownerOp: callable) -> None:
-        self.inventory = githubCollection()
+    def __init__(self, ownerOp) -> None:
+        self.inventory = SudoMagic.entities.githubCollection()
         self.inventory.author = ipar.Settings.Author.eval()
         self.inventory.source = ipar.Settings.Repo.eval()
 
@@ -63,20 +61,20 @@ class ToxExporter:
         print('-> completing build')
         self.write_inventory_to_file(self.inventory.to_dict())
 
-    def _generate_op_info(self, target_op: callable, path: str) -> dict:
+    def _generate_op_info(self, target_op, path: str) -> dict:
 
-        remote_op: remoteTox = remoteTox()
+        remote_op: SudoMagic.entities.remoteTox = SudoMagic.entities.remoteTox()
         # generate all the info needed for dict
         remote_op.asset_path
         remote_op.path = path
-        remote_op.type_tag = cloudPaletteTypes.folder if 'block' in target_op.tags else cloudPaletteTypes.tdComp
+        remote_op.type_tag = SudoMagic.entities.cloudPaletteTypes.folder if 'block' in target_op.tags else SudoMagic.entities.cloudPaletteTypes.tdComp
         remote_op.display_name = target_op.par.Blockname.eval(
         ) if 'block' in target_op.tags else target_op.par.Compname.eval()
-        remote_op.tox_version = None if 'block' in target_op.tags else target_op.par.Toxversion.eval()
-        remote_op.last_updated = None if 'block' in target_op.tags else target_op.par.Lastsaved.eval()
-        remote_op.td_version = None if 'block' in target_op.tags else f'{target_op.par.Tdversion.eval()}.{target_op.par.Tdbuild.eval()}'
-        remote_op.op_families = None
-        remote_op.op_types = None
+        remote_op.tox_version = "" if 'block' in target_op.tags else target_op.par.Toxversion.eval()
+        remote_op.last_updated = "" if 'block' in target_op.tags else target_op.par.Lastsaved.eval()
+        remote_op.td_version = "" if 'block' in target_op.tags else f'{target_op.par.Tdversion.eval()}.{target_op.par.Tdbuild.eval()}'
+        remote_op.opFamilies = []
+        remote_op.opTypes = []
 
         # write op to disk and generate path
         if 'block' in target_op.tags:
@@ -84,9 +82,9 @@ class ToxExporter:
         else:
             children_ops = target_op.findChildren()
             remote_op.asset_path = self.save_external(target_op)
-            remote_op.op_families = list(
+            remote_op.opFamilies = list(
                 set([each_op.family for each_op in children_ops]))
-            remote_op.op_types = list(
+            remote_op.opTypes = list(
                 set([each_op.OPType for each_op in children_ops]))
 
         return remote_op.to_dict()
@@ -97,7 +95,7 @@ class ToxExporter:
         with open(f'{self.release_dir_root}inventory.json', 'w+') as file:
             file.write(json.dumps(inventory))
 
-    def save_external(self, target_op: callable) -> str:
+    def save_external(self, target_op) -> str:
         asset_path = f'{target_op.id}.{target_op.name}.tox'
         save_path = f'{self.release_dir_root}{asset_path}'
         target_op.save(save_path)
