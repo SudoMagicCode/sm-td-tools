@@ -11,10 +11,10 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
         with:
+          submodules: 'recursive' 
+          token: ${{ secrets.SUBMODULE_PAT }}
           fetch-depth: 0
           fetch-tags: true
-          submodules: 'recursive' 
-          token: ${{secrets.SUBMODULE_PAT}}
 
       - name: Start Python Runner
         run: python scripts/build_inventory.py
