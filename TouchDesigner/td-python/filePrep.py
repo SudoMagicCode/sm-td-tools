@@ -9,14 +9,23 @@ class ToxExporter:
         self.inventory.author = ipar.Settings.Author.eval()
         self.inventory.source = ipar.Settings.Repo.eval()
 
-        self.release_dir_root: str = "../release/"
+        self.Release_dir_root: str = "../release/"
+        self.Log_file: str = "log.txt"
 
         print("TOX Exporter Init")
 
     def Build_inventory(self) -> None:
         self._build_inventory()
 
-    def _build_inventory(self) -> None:
+    def Build_for_release(self) -> None:
+        self._write_action_to_log("Starting Build process in TD")
+        # build inventory
+        self._build_inventory(log_to_file=True)
+
+        # exit project
+        project.quit(force=True)
+
+    def _build_inventory(self, log_to_file: bool = False) -> None:
         print('-> Starting build process')
 
         name_to_type_map: dict[str, str] = {
@@ -52,7 +61,10 @@ class ToxExporter:
                         if each_example.name in source_exclude_list:
                             pass
                         else:
+
                             print(f'---> {each_example.name}')
+                            self._write_action_to_log(
+                                f'processing | {each_example.name}')
                             path: str = f"{each_block.par.Blockname.eval()}/{each_example.par.Compname.eval()}"
                             info: dict = self._generate_op_info(
                                 each_example, path)
@@ -89,14 +101,18 @@ class ToxExporter:
 
         return remote_op.to_dict()
 
+    def _write_action_to_log(self, message: str) -> None:
+        with open(self.Log_file, 'a+') as logFile:
+            logFile.write(f"{message}\n")
+
     def write_inventory_to_file(self, inventory: dict) -> None:
 
         print('--> writing inventory to file')
-        with open(f'{self.release_dir_root}inventory.json', 'w+') as file:
+        with open(f'{self.Release_dir_root}inventory.json', 'w+') as file:
             file.write(json.dumps(inventory))
 
     def save_external(self, target_op) -> str:
         asset_path = f'{target_op.id}.{target_op.name}.tox'
-        save_path = f'{self.release_dir_root}{asset_path}'
+        save_path = f'{self.Release_dir_root}{asset_path}'
         target_op.save(save_path)
         return asset_path
