@@ -13,10 +13,10 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          submodules: true 
+          submodules: 'recursive' 
 
       - name: Start Python Runner
-        run: python scripts/build_tox.py
+        run: python scripts/build_inventory.py
         env:
           IS_GITHUB: "TRUE"         
 
