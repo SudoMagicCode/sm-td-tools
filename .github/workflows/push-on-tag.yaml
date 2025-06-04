@@ -16,10 +16,10 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Start Python Runner
-        run: python scripts/build_inventory.py
-        env:
-          IS_GITHUB: "TRUE"         
+      - name: SudoMagic TD Package Builder
+        uses: SudoMagicCode/action-build-td-tox-package@v0.0.1
+        with:
+          build_settings: ./buildSettings.json    
 
           
       - name: Release

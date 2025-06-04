@@ -2,6 +2,7 @@
     "BUILD": "TRUE",
     "TD_VERSION": "2023.12370",
     "PROJECT_FILE": "./TouchDesigner/project.toe",
-    "REPO": "https://github.com/SudoMagicCode/sm-td-tools",
-    "COMP_NAME": ""
+    "COMP_NAME": "",
+    "BUILD_CONTENTS": "toxFiles",
+    "USE_TDM": true
 }
