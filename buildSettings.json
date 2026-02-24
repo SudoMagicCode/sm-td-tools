@@ -1,6 +1,6 @@
 {
     "BUILD": "TRUE",
-    "TD_VERSION": "2023.12370",
+    "TD_VERSION": "2025.32280.Project",
     "PROJECT_FILE": "./TouchDesigner/project.toe",
     "COMP_NAME": "",
     "BUILD_CONTENTS": "toxFiles",

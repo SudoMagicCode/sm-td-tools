@@ -29,7 +29,7 @@ class remoteTox:
             'last_updated': self.last_updated,
             'td_version': self.td_version,
             'asset_path': self.asset_path,
-            'opFamilies': self.op_families,
-            'opTypes': self.op_types,
+            'opFamilies': self.opFamilies,
+            'opTypes': self.opTypes,
         }
         return info
