@@ -1,10 +1,12 @@
 name: SM TD Tools
-tdVersion: 2025.32280.Project
+tdVersion: 2025.32460.Project
 tdPackages:
     - package: github.com/SudoMagicCode/td-comp-icon
       releaseTag: v1.2.8
     - package: github.com/SudoMagicCode/TD-TOX-Saver
-      releaseTag: v1.0.9
+      releaseTag: v1.1.2
     - package: github.com/SudoMagicCode/td-annotation-controller
-      releaseTag: v0.1.4
+      releaseTag: v0.1.6
+    - package: github.com/SudoMagicCode/td-packager-comp
+      releaseTag: v0.2.27
 pythonRequirements: []
