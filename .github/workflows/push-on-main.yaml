@@ -65,3 +65,9 @@ jobs:
           draft: false 
           prerelease: false
           files: ./artifacts/package/*
+
+      - name: Clean up workspace
+        if: always() # Ensure this runs even if previous steps fail
+        run: |
+          rm -rf "${GITHUB_WORKSPACE:?}/"* || true
+          rm -rf "${GITHUB_WORKSPACE:?}/".??* || true
