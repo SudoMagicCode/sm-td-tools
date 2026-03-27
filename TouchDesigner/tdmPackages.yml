@@ -10,13 +10,13 @@ tdPackages:
     - package: github.com/SudoMagicCode/td-packager-comp
       releaseTag: v0.2.27
     - package: github.com/SudoMagicCode/td-annotation-formatter
-      releaseTag: v0.1.2
+      releaseTag: v0.1.5
     - package: github.com/SudoMagicCode/sudoSignals_td_plugin
       releaseTag: v2.1.2
     - package: github.com/SudoMagicCode/td-projector-tools
-      releaseTag: v1.1.4
+      releaseTag: v1.1.7
     - package: github.com/SudoMagicCode/td-prism
-      releaseTag: v1.1.6
+      releaseTag: v1.1.9
     - package: github.com/SudoMagicCode/td-shader-lib
-      releaseTag: v1.1.6
+      releaseTag: v1.1.9
 pythonRequirements: []
