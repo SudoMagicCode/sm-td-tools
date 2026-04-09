@@ -19,4 +19,6 @@ tdPackages:
       releaseTag: v1.1.9
     - package: github.com/SudoMagicCode/td-shader-lib
       releaseTag: v1.1.9
+    - package: github.com/SudoMagicCode/td-synapse
+      releaseTag: v0.1.6
 pythonRequirements: []
