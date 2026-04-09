@@ -20,5 +20,5 @@ tdPackages:
     - package: github.com/SudoMagicCode/td-shader-lib
       releaseTag: v1.1.9
     - package: github.com/SudoMagicCode/td-synapse
-      releaseTag: v0.1.8
+      releaseTag: v0.1.12
 pythonRequirements: []
